@@ -58,4 +58,4 @@ jobs:   # 定義工作流程中的不同的jobs
         run: |
           GOOS=linux GOARCH=arm64 go build -o bootstrap main.go
           zip bootstrap.zip bootstrap
-          aws lambda update-function-code --function-name HealthyBot --zip-file fileb://bootstrap.zip
+          aws lambda update-function-code --function-name healthyBot --zip-file fileb://bootstrap.zip
