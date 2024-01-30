@@ -49,10 +49,6 @@ func init() {
 	r.POST("/callback", func(c *gin.Context) {
 		// ctx := c.Request.Context()
 		cb, err := webhook.ParseRequest(lineSecret, c.Request)
-		log.Println("secret : " + lineSecret)
-		log.Println("access token : " + lineAccessToken)
-		sign := c.Request.Header.Get("X-Line-Signature")
-		log.Println("sign : " + sign)
 		if err != nil {
 			if err == linebot.ErrInvalidSignature {
 				log.Println(err)
@@ -103,6 +99,7 @@ func init() {
 				case webhook.ImageMessageContent:
 					replyMessage := fmt.Sprintf(
 						"image id is %s", message.Id)
+					log.Println("originalContentUrl : " + message.ContentProvider.OriginalContentUrl)
 					if _, err = bot.ReplyMessage(
 						&messaging_api.ReplyMessageRequest{
 							ReplyToken: e.ReplyToken,
