@@ -9,9 +9,6 @@ on:   # 定義觸發工作流程的事件
     types: [opened, synchronize, reopened]
     branches:   # 指定了觸發分支為"main"
       - "main"
-runs:
-  using: 'node20'
-  main: 'main.js'
 
 jobs:   # 定義工作流程中的不同的jobs
 #  Go-Test:  # jobs名稱 (用於測試)
@@ -38,6 +35,9 @@ jobs:   # 定義工作流程中的不同的jobs
 
   Deploy-to-Lambda: # 第二個工作，用於部署Go應用程序到AWS Lambda
     runs-on: ubuntu-latest
+    runs:
+      using: 'node20'
+      main: 'main.js'
 #    needs: [Go-Test] # 依賴於Go-Test，只有在Go-Test這個job跑成功時才會執行(測試過後)
     if: ${{ github.ref == 'refs/heads/main'}} # 指定只有當GitHub分支為"main"時才運行這個job
     steps:
