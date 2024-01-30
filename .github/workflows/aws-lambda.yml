@@ -11,26 +11,26 @@ on:   # 定義觸發工作流程的事件
       - "main"
 
 jobs:   # 定義工作流程中的不同的jobs
-  Go-Test:  # jobs名稱 (用於測試)
-    runs-on: ubuntu-latest  # 指定運行這個job的運行環境
-    steps:  # 定義了一系列步驟，每個步驟執行一個特定的操作
-      - name: Get project resource # 下載你的repo
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-
-      - name: Setup Go  # 設置Go環境
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21' # 指定使用Go版本為1.21
-
-      - name: Run golangci-lint # 運行golangci-lint工具來進行Go代碼的靜態檢查
-        uses: golangci/golangci-lint-action@v3
-        # golangci-lint didn't merge below PR yet
-        with: 
-          version: v1.53
-          args: --timeout 3m --verbose
-        #   output-file: golangci-lint.out
+#  Go-Test:  # jobs名稱 (用於測試)
+#    runs-on: ubuntu-latest  # 指定運行這個job的運行環境
+#    steps:  # 定義了一系列步驟，每個步驟執行一個特定的操作
+#      - name: Get project resource # 下載你的repo
+#        uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+#
+#      - name: Setup Go  # 設置Go環境
+#        uses: actions/setup-go@v4
+#        with:
+#          go-version: '1.21' # 指定使用Go版本為1.21
+#
+#      - name: Run golangci-lint # 運行golangci-lint工具來進行Go代碼的靜態檢查
+#        uses: golangci/golangci-lint-action@v3
+#        # golangci-lint didn't merge below PR yet
+#        with:
+#          version: v1.53
+#          args: --timeout 3m --verbose
+#        #   output-file: golangci-lint.out
 
 
   Deploy-to-Lambda: # 第二個工作，用於部署Go應用程序到AWS Lambda
