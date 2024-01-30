@@ -99,13 +99,17 @@ func init() {
 				case webhook.ImageMessageContent:
 					replyMessage := fmt.Sprintf(
 						"image id is %s", message.Id)
-					log.Printf("originalContentUrl :  %+v", message.ContentProvider)
+					log.Printf("originalContentUrl :  %+v", e)
 					if _, err = bot.ReplyMessage(
 						&messaging_api.ReplyMessageRequest{
 							ReplyToken: e.ReplyToken,
 							Messages: []messaging_api.MessageInterface{
 								messaging_api.TextMessage{
 									Text: replyMessage,
+								},
+								messaging_api.ImageMessage{
+									OriginalContentUrl: "https://i.imgur.com/WRHOOAI.jpg",
+									PreviewImageUrl:    "https://i.imgur.com/WRHOOAI.jpg",
 								},
 							},
 						}); err != nil {
