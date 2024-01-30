@@ -99,7 +99,7 @@ func init() {
 				case webhook.ImageMessageContent:
 					replyMessage := fmt.Sprintf(
 						"image id is %s", message.Id)
-					log.Printf("originalContentUrl :  %+V", message.ContentProvider)
+					log.Printf("originalContentUrl :  %+v", message.ContentProvider)
 					if _, err = bot.ReplyMessage(
 						&messaging_api.ReplyMessageRequest{
 							ReplyToken: e.ReplyToken,
