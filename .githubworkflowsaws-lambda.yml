@@ -1,0 +1,61 @@
+name: Build and test Go & Deploy to Lambda # 工作流程的名稱
+on:   # 定義觸發工作流程的事件
+  workflow_dispatch:  # 允許手動觸發工作流程
+  push:   # 當push到github時觸發工作流程
+    branches:   # 指定只有分支為"main"會觸發
+      - "main"
+#      - "feature-*"
+  pull_request:   # 當有新的PR開起、同步或重開時會觸發工作流程
+    types: [opened, synchronize, reopened]
+    branches:   # 指定了觸發分支為"main"
+      - "main"
+
+jobs:   # 定義工作流程中的不同的jobs
+  Go-Test:  # jobs名稱 (用於測試)
+    runs-on: ubuntu-latest  # 指定運行這個job的運行環境
+    steps:  # 定義了一系列步驟，每個步驟執行一個特定的操作
+      - name: Get project resource # 下載你的repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Setup Go  # 設置Go環境
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21' # 指定使用Go版本為1.21
+
+      - name: Run golangci-lint # 運行golangci-lint工具來進行Go代碼的靜態檢查
+        uses: golangci/golangci-lint-action@v3
+        # golangci-lint didn't merge below PR yet
+        with: 
+          version: v1.53
+          args: --timeout 3m --verbose
+        #   output-file: golangci-lint.out
+
+
+  Deploy-to-Lambda: # 第二個工作，用於部署Go應用程序到AWS Lambda
+    runs-on: ubuntu-latest
+    needs: [Go-Test] # 依賴於Go-Test，只有在Go-Test這個job跑成功時才會執行(測試過後)
+    if: ${{ github.ref == 'refs/heads/main'}} # 指定只有當GitHub分支為"main"時才運行這個job
+    steps:
+      - name: Configure AWS credentials # 設置AWS的身份驗證信息
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-1
+      # 前面與Go-Test相同
+      - name: Get project resource
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21' 
+
+      # 跟昨天手動部署的流程相同
+      - name: Build Lambda bootstrap
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o bootstrap main.go
+          zip bootstrap.zip bootstrap
+          aws lambda update-function-code --function-name BaoSaveLineBot --zip-file fileb://bootstrap.zip
